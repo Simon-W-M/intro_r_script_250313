@@ -1,0 +1,123 @@
+---
+title: "simons_intro_r_quarto"
+format: html
+toc: true
+editor: visual
+---
+
+```{r}
+#| echo: false
+#| label: load_libs_and_data
+#| warning: false
+
+# load in libraries
+library(tidyverse)
+
+# import messy data
+beds_data <- read_csv("beds_data.csv", 
+                      col_types = cols(date = col_date(format = "%d/%m/%Y")), 
+                      skip = 3)
+```
+
+```{r}
+#| echo: false
+#| label: data_wrangle
+
+org <- 'Devon Partnership'
+
+time_occupancy <- beds_data |>
+  filter(org_name == org) |>
+  mutate(perc_occ = occ_av / beds_av) |>
+  arrange(desc(perc_occ))
+
+```
+
+# Bed occupancy report for `r org`
+
+This report shows bed occupancy over time...  blah blah
+
+This report covers the period `r min(time_occupancy$date)` to `r max(time_occupancy$date)`.
+
+
+## Plot showing bed occupancy over time
+
+
+```{r}
+#| echo: false
+#| label: time_plot
+
+ggplot(data = time_occupancy) +
+  aes(x = date,
+      y = perc_occ) +
+  geom_line() +
+  geom_point() +
+  theme_minimal()
+
+
+```
+
+
+```{r}
+#| echo: false
+#| label: data_wrangle_multi
+
+orgs <- c('Devon Partnership',
+          'Royal Free London',
+          'North Staffordshire Combined Healthcare')
+
+time_occupancy_m <- beds_data |>
+  filter(org_name %in% orgs) |>
+  mutate(perc_occ = occ_av / beds_av) |>
+  arrange(desc(perc_occ))
+
+```
+
+# Bed occupancy report for `r orgs`
+
+This report shows bed occupancy over time...  blah blah
+
+This report covers the period **`r min(time_occupancy_m$date)`** to *`r max(time_occupancy_m$date)`*.
+
+
+## Plot showing bed occupancy over time
+
+
+```{r}
+#| echo: false
+#| label: time_plot_multi
+#| warning: false
+
+ggplot(data = time_occupancy_m) +
+  aes(x = date,
+      y = perc_occ) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~ org_name) +
+  theme_minimal()
+
+
+```
+
+
+
+::: {.callout-note collapse="true"}
+## Information
+Please note this data may be subject to noodles.
+
+There also may be sharks.
+:::
+
+
+## Sub blurb goes here
+
+Blah blah blah 
+
+## Thrird sub blurb table goes here
+
+Blah blah blah 
+
+Blah blah blah 
+
+
+
+
